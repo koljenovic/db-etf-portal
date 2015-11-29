@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>ETF Portal Login</title>
+        <link href="{{rootUri}}/css/main.css" rel="stylesheet">
+        <script type="application/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        <script type="application/javascript">
+            $(document).ready(
+                function () {
+                    $('#btn').live('click',
+                        function () {
+                            var email = $('#email').val();
+                            var pass = $('#pass').val();
+                            if(!email) {
+                                $('#email').css('border', '1px solid red');
+                            } else {
+                                $('#email').animate({opacity: 0.1}, 3000)
+                            }
+                            if(!pass) {
+                                $('#pass').css('border', '1px solid red');
+                            } else {
+                                $('#pass').animate({opacity: 0.1}, 3000)
+                            }
+                        });
+                    $('#glisa').one('click',
+                        function () {
+                            $('#email').val('');
+                            $('#pass').val('');
+                            $('#email').css('border', '1px solid #adadad');
+                            $('#pass').css('border', '1px solid #adadad');
+                            $('#email').animate({opacity: 1}, 3000);
+                            $('#pass').animate({opacity: 1}, 3000);
+                        });
+                    $('#email, #pass').live('change',
+                        function () {
+                            if(!$(this).val()) {
+                                $(this).css('border', '1px solid red');
+                            } else {
+                                $(this).css('border', '1px solid green');
+                            }
+                        });
+                });
+        </script>
+    </head>
+    <body>
+        <div id="wrap">
+            <div class="outer" id="left">
+                <img src="{{rootUri}}/imgs/etf_logo.png" alt="" id="glisa" />
+            </div>
+            <div class="outer" id="right">
+                <div id="login">
+                    <form id="forma" method="POST" action="{{baseUri}}/login/">
+                        <div class="row">
+                            <h2 class="fl">Prijavi se (LDAP)</h2>
+                        </div>
+                        <div class="row">
+                            <input type="text" id="email" name="email" placeholder="Korisnik" />
+                        </div>
+                        <div class="row">
+                            <input type="password" id="pass" name="pass" placeholder="Šifra" />
+                        </div>
+                        <div class="row">
+                            <input type="button" onclick="document.getElementById('forma').submit()" id="btn" value="Dalje" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
