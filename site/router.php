@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('Europe/Sarajevo');
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -43,10 +44,14 @@ $app->get('/', function () use ($twig, $urls, $em) {
     if (array_key_exists('session', $_COOKIE)) {
         $c = explode(':', $_COOKIE['session']);
         $s = $em->find('Sesija', $c[1]);
-        echo '<h3>Ulogovan:</h3>';
-        echo '<pre>';
-        print_r($s);
-        echo '</pre>';
+        if($s->getValidna()) {
+            echo '<h3>Ulogovan:</h3>';
+            echo '<pre>';
+            print_r($s);
+            echo '</pre>';
+        } else {
+            setcookie('session', '', time() - 60 * 60 * 24 * 30, $urls['rootUri'] . '/');
+        }
     }
 });
 
@@ -66,7 +71,7 @@ $app->post('/login/', function () use ($em, $urls) {
         return;
     }
     try {
-        $ds = ldap_connect("192.168.1.134");
+        $ds = ldap_connect("localhost");
         ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option( $ds, LDAP_OPT_REFERRALS, 0 );
         $user_data = explode('@', $_POST['email']);
@@ -102,7 +107,10 @@ $app->post('/login/', function () use ($em, $urls) {
             $r = [
                 "error" => $e->getCode()
             ];
-            echo json_encode($r);
+//            echo json_encode($r);
+            echo '<pre>';
+            echo $e->getTraceAsString();
+            echo '</pre>';
 //            print_r($e->getTrace());
         } else {
             echo json_encode([]);
@@ -110,12 +118,16 @@ $app->post('/login/', function () use ($em, $urls) {
     }
 });
 
+
+
 $app->get('/logout/', function () use ($em, $urls) {
     if(array_key_exists('session', $_COOKIE)) {
         $c = explode(':', $_COOKIE['session']);
         $s = $em->find('Sesija', $c[1]);
-        if ($s->getKljuc() == $c[0]) {
-            $em->remove($s);
+        if ($s->getKljuc() == $c[0] && $s->getValidna()) {
+            $s->setValidna(false);
+            $s->setKrajDt(new DateTime("now"));
+            $em->merge($s);
             $em->flush();
             setcookie('session', '', time() - 60 * 60 * 24 * 30, $urls['rootUri'] . '/');
         } else {

@@ -1,14 +1,10 @@
 <?php
-
+use \Doctrine\Common\Collections\ArrayCollection;
 /**
  * @Entity @Table(name="sesije")
  */
 class Sesija
 {
-
-
-    // @TODO: dodati datum
-
 
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
@@ -24,6 +20,72 @@ class Sesija
     protected $prezime;
     /** @Column(type="string") **/
     protected $rola;
+    /** @Column(type="datetimetz") **/
+    protected $start_dt;
+    /** @Column(type="datetimetz") **/
+    protected $kraj_dt;
+    /** @Column(type="boolean") **/
+    protected $validna;
+    /** OneToMany(targetEntity="Medium", mappedBy="korisnik") **/
+    protected $media;
+
+    public function __construct()
+    {
+        $this->media = new ArrayCollection();
+        if(is_null($this->getId())) {
+            $this->setStartDt(new DateTime("now"));
+            $this->setKrajDt($this->getStartDt());
+            $this->setValidna(true);
+        }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStartDt()
+    {
+        return $this->start_dt;
+    }
+
+    /**
+     * @param mixed $start_dt
+     */
+    public function setStartDt($start_dt)
+    {
+        $this->start_dt = $start_dt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getKrajDt()
+    {
+        return $this->kraj_dt;
+    }
+
+    /**
+     * @param mixed $kraj_dt
+     */
+    public function setKrajDt($kraj_dt)
+    {
+        $this->kraj_dt = $kraj_dt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getValidna()
+    {
+        return $this->validna;
+    }
+
+    /**
+     * @param mixed $validna
+     */
+    public function setValidna($validna)
+    {
+        $this->validna = $validna;
+    }
 
     /**
      * @return mixed
