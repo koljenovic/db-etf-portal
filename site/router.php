@@ -139,4 +139,8 @@ $app->get('/logout/', function () use ($em, $urls) {
     }
 });
 
+$app->post('/media/', function () use ($em, $urls) {
+
+});
+
 $app->run();
