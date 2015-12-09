@@ -6,6 +6,8 @@ error_reporting(E_ALL);
 
 require 'vendor/autoload.php';
 require 'class/Sesija.php';
+require 'class/Medium.php';
+require 'class/Podaci.php';
 
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
@@ -137,14 +139,27 @@ $app->get('/logout/', function () use ($em, $urls) {
     die();
 });
 
-$app->get('/media/', function () use ($twig, $em, $urls) {
+$app->get('/media/:id/', function ($id) use ($twig, $em, $urls) {
     if ($urls['ulogovan']) {
+        // @TODO spremati filesize i mimetype u Podaci, konvertovati u base64 odma prije snimanja
         echo $twig->render('@page/media.html', $urls);
+        $slika = $em->find('Podaci', $id);
+        $cont = base64_encode(stream_get_contents($slika->getSadrzaj()));
+        echo '<img style="width:320px" src="data:image/jpg;base64,' . $cont . '" />';
     }
 });
 
 $app->post('/media/', function () use ($em, $urls) {
-
+    if (is_uploaded_file($_FILES['datoteka']['tmp_name'])) {
+        $p = new Podaci();
+        $f = fopen($_FILES['datoteka']['tmp_name'], "r");
+        $fc = fread($f, $_FILES['datoteka']['size']);
+        $p->setSadrzaj($fc);
+        fclose($f);
+        $em->persist($p);
+        $em->flush();
+        echo 'OK';
+    }
 });
 
 $app->run();
