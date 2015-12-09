@@ -1,26 +1,20 @@
 {% extends "@base/main.html" %}
 {% block content %}
-<div id="wrap">
-  <div class="outer" id="left">
-    <img src="{{rootUri}}/imgs/etf_logo.png" alt="" id="glisa" />
-  </div>
-  <div class="outer" id="right">
-    <div id="login">
-      <form id="forma" method="POST" action="{{baseUri}}/login/">
-        <div class="row">
-          <h2 class="fl">Prijavi se (LDAP)</h2>
-        </div>
-        <div class="row">
-          <input type="text" id="email" name="email" placeholder="Korisnik" />
-        </div>
-        <div class="row">
-          <input type="password" id="pass" name="pass" placeholder="Šifra" />
-        </div>
-        <div class="row">
-          <input type="button" onclick="document.getElementById('forma').submit()" id="btn" value="Dalje" />
-        </div>
-      </form>
+<div class="row vertical-align">
+    <div class="col-md-6">
+        <img src="{{rootUri}}/imgs/etf_logo.png" alt="" id="glisa"/>
     </div>
-  </div>
+    <div class="col-md-6 va">
+        <form id="forma" method="POST" action="{{baseUri}}/login/">
+            <div class="form-group">
+                <label for="email">Prijavi se (LDAP)</label>
+                <input type="text" class="form-control" id="email" name="email" placeholder="Korisnik"/>
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" id="pass" name="pass" placeholder="Šifra"/>
+            </div>
+            <button class="btn btn-default" onclick="document.getElementById('forma').submit()" id="btn">Dalje</button>
+        </form>
+    </div>
 </div>
 {% endblock %}
