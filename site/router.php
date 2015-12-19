@@ -4,10 +4,11 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require 'vendor/autoload.php';
-require 'class/Sesija.php';
-require 'class/Medium.php';
-require 'class/Podaci.php';
+require_once 'vendor/autoload.php';
+require_once 'class/Sesija.php';
+require_once 'class/Medium.php';
+require_once 'class/MediaTip.php';
+require_once 'class/Kategorija.php';
 
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
@@ -61,7 +62,10 @@ function is_ulogovan()
 }
 
 $app->get('/', function () use ($twig, $urls, $em) {
-    echo $twig->render('@page/landing.html', $urls);
+//    echo $twig->render('@page/landing.html', $urls);
+    $files = $em->getRepository('Medium')->findAll();
+    $urls['listing'] = $files;
+    echo $twig->render('@page/media_listing.html', $urls);
 });
 
 $app->get('/login/', function () use ($twig, $urls) {
@@ -139,26 +143,70 @@ $app->get('/logout/', function () use ($em, $urls) {
     die();
 });
 
-$app->get('/media/:id/', function ($id) use ($twig, $em, $urls) {
+$app->get('/media/', function () use ($twig, $em, $urls) {
     if ($urls['ulogovan']) {
-        // @TODO spremati filesize i mimetype u Podaci, konvertovati u base64 odma prije snimanja
         echo $twig->render('@page/media.html', $urls);
-        $slika = $em->find('Podaci', $id);
-        $cont = base64_encode(stream_get_contents($slika->getSadrzaj()));
-        echo '<img style="width:320px" src="data:image/jpg;base64,' . $cont . '" />';
+    } else {
+        // @todo opet centralizovati ako nije ulogovan cemi ima cemu nema pristup zdra'o
+        echo 'poruka da se mora ulogovati iil nesto tako';
     }
 });
 
-$app->post('/media/', function () use ($em, $urls) {
+$app->get('/media/list/', function () use ($twig, $em, $urls) {
+    if ($urls['ulogovan']) {
+        $files = $em->getRepository('Medium')->findAll();
+        $urls['listing'] = $files;
+        echo $twig->render('@page/media_listing.html', $urls);
+    }
+});
+
+$app->get('/media/:id/', function ($id) use ($twig, $em, $urls, $app) {
+    if ($urls['ulogovan']) {
+        $m = $em->find('Medium', $id);
+        $dest_file = '../data/' . $m->getFilename();
+        $app->response->headers->set('Content-Type', $m->getTip()->getNaziv());
+        // @TODO mozda neki pametniji kriterij sta prikazati sta downloadati ili da caller odluci
+        if(explode('/', $m->getTip()->getNaziv())[0] != 'image') {
+            $app->response->headers->set('Content-Disposition', 'attachment; filename="' . substr($m->getFilename(), 14) . '"');
+        }
+        $app->response->headers->set('Expires', '0');
+        $app->response->headers->set('Cache-Control', 'must-revalidate');
+        $app->response->headers->set('Pragma', 'public');
+        $app->response->headers->set('Content-Length', '' . filesize($dest_file));
+        // @TODO ovo treba postaviti da bude centralizovani data_dest ustvari source
+        echo file_get_contents($dest_file);
+    }
+});
+
+$app->post('/media/', function () use ($em, $urls, $app) {
+    // @todo neka pametna provjera da li je ulogovan centralizovati da se ne mora stalno zivkati
     if (is_uploaded_file($_FILES['datoteka']['tmp_name'])) {
-        $p = new Podaci();
-        $f = fopen($_FILES['datoteka']['tmp_name'], "r");
-        $fc = fread($f, $_FILES['datoteka']['size']);
-        $p->setSadrzaj($fc);
-        fclose($f);
-        $em->persist($p);
-        $em->flush();
-        echo 'OK';
+        $dest_dir = '../data/';
+        $dest_name = uniqid() . '_' . basename($_FILES['datoteka']['name']);
+        $dest_file = $dest_dir . $dest_name;
+        $ext = '.' . strtolower(pathinfo($dest_file, PATHINFO_EXTENSION));
+        $tip = $em->getRepository('MediaTip')->findOneBy(array('ekstenzija' => $ext));
+        if($tip && $tip->getDozvoljen()) {
+            // @TODO moze biti tekst ili binary na osnovu toga ko submita koristiti
+            // razlicite metode snimanja ili mozda koristiti dvije metode hmm
+            if(move_uploaded_file($_FILES['datoteka']['tmp_name'], $dest_file)) {
+                $m = new Medium();
+                $m->setKorisnik($urls['korisnik']);
+                $m->setFilename($dest_name);
+                $m->setTip($tip);
+                $k = $em->getRepository('Kategorija')->findOneBy(array('naziv' => 'root'));
+                $m->setKategorija($k);
+
+                $em->persist($m);
+                $em->flush();
+            } else {
+                $app->response->setStatus(400);
+                echo json_encode(array('error' => 'Puk\'o kvar.'));
+            }
+        } else {
+            $app->response->setStatus(415);
+            echo json_encode(array('error' => "$ext tip datoteke nije podržan ili dozvoljen"));
+        }
     }
 });
 

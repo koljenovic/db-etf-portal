@@ -9,13 +9,87 @@ class MediaTip
     protected $id;
     /** @Column(type="boolean") **/
     protected $binarni;
-    /** @Column(type="string") **/
+    // @TODO indksirati po
+    /** @Column(type="string", unique=true) **/
     protected $naziv;
+    // @TODO indksirati po
+    /** @Column(type="string", unique=true) **/
+    protected $ekstenzija;
+    /** @Column(type="string") **/
+    protected $opis;
+    /** @Column(type="string", nullable=true) **/
+    protected $url;
+    /** @Column(type="boolean") **/
+    protected $dozvoljen;
     /** OneToMany(targetEntity="Medium", mappedBy="tip") **/
     protected $media;
 
     public function __construct() {
         $this->media = new ArrayCollection();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEkstenzija()
+    {
+        return $this->ekstenzija;
+    }
+
+    /**
+     * @param mixed $ekstenzija
+     */
+    public function setEkstenzija($ekstenzija)
+    {
+        $this->ekstenzija = $ekstenzija;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOpis()
+    {
+        return $this->opis;
+    }
+
+    /**
+     * @param mixed $opis
+     */
+    public function setOpis($opis)
+    {
+        $this->opis = $opis;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param mixed $url
+     */
+    public function setUrl($url)
+    {
+        $this->url = $url;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDozvoljen()
+    {
+        return $this->dozvoljen;
+    }
+
+    /**
+     * @param mixed $dozvoljen
+     */
+    public function setDozvoljen($dozvoljen)
+    {
+        $this->dozvoljen = $dozvoljen;
     }
 
     /**

@@ -11,10 +11,9 @@ class Kategorija
     /** @Column(type="string") **/
     protected $naziv;
     /** @OneToMany(targetEntity="Kategorija", mappedBy="parent") **/
-    protected $parent;
-    /** @ManyToOne(targetEntity="Kategorija", inversedBy="children") **/
     protected $children;
-
+    /** @ManyToOne(targetEntity="Kategorija", inversedBy="children") **/
+    protected $parent;
     /** OneToMany(targetEntity="Medium", mappedBy="kategorija") **/
     protected $media;
 

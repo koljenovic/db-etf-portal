@@ -1,0 +1,14 @@
+{% extends "@base/main.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h3>Media Listing</h3>
+        <p>Testni prikaz svih uploadanih fajlova bez podesene hijerarhije:</p>
+        <ol>
+            {% for media in listing %}
+            <li><a href="{{rootUri}}/media/{{media.id}}">{{media.filename}}</a></li>
+            {% endfor %}
+        </ol>
+    </div>
+</div>
+{% endblock %}

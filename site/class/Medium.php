@@ -9,7 +9,7 @@ class Medium
 {
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
-    /** @Column(type="string") **/
+    /** @Column(type="string", nullable=true) **/
     protected $tekst;
     /** @Column(type="boolean") **/
     protected $izdvojeno;
@@ -17,17 +17,18 @@ class Medium
     protected $tip;
     /** @ManyToOne(targetEntity="Sesija", inversedBy="media") **/
     protected $korisnik;
-    /** @OneToOne(targetEntity="Podaci") **/
-    protected $podaci;
+    /** @Column(type="string", nullable=true) **/
+    protected $filename;
     /** @ManyToOne(targetEntity="Kategorija", inversedBy="media") **/
     protected $kategorija;
     /** @OneToMany(targetEntity="Medium", mappedBy="parent") **/
-    protected $parent;
-    /** @ManyToOne(targetEntity="Medium", inversedBy="children") **/
     protected $children;
+    /** @ManyToOne(targetEntity="Medium", inversedBy="children") **/
+    protected $parent;
 
     public function __construct() {
         $this->children = new ArrayCollection();
+        $this->setIzdvojeno(false);
     }
 
     /**
@@ -113,22 +114,6 @@ class Medium
     /**
      * @return mixed
      */
-    public function getPodaci()
-    {
-        return $this->podaci;
-    }
-
-    /**
-     * @param mixed $podaci
-     */
-    public function setPodaci($podaci)
-    {
-        $this->podaci = $podaci;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getKategorija()
     {
         return $this->kategorija;
@@ -173,4 +158,22 @@ class Medium
     {
         $this->children = $children;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getFilename()
+    {
+        return $this->filename;
+    }
+
+    /**
+     * @param mixed $filename
+     */
+    public function setFilename($filename)
+    {
+        $this->filename = $filename;
+    }
+
+
 }
