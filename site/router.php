@@ -13,6 +13,8 @@ require_once 'class/Kategorija.php';
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 
+use XmppPrebind;
+
 \Slim\Slim::registerAutoloader();
 
 chdir(__DIR__);
@@ -130,6 +132,7 @@ $app->post('/login/', function () use ($em, $urls) {
 });
 
 $app->get('/logout/', function () use ($em, $urls) {
+    // @TODO: ponistiti chat sesiju
     if ($urls['ulogovan']) {
         $c = explode(':', $_COOKIE['session']);
         $s = $em->find('Sesija', $c[1]);
@@ -148,7 +151,8 @@ $app->get('/media/', function () use ($twig, $em, $urls) {
         echo $twig->render('@page/media.html', $urls);
     } else {
         // @todo opet centralizovati ako nije ulogovan cemi ima cemu nema pristup zdra'o
-        echo 'poruka da se mora ulogovati iil nesto tako';
+        header('Location: /login/');
+        die();
     }
 });
 
@@ -157,6 +161,18 @@ $app->get('/media/list/', function () use ($twig, $em, $urls) {
         $files = $em->getRepository('Medium')->findAll();
         $urls['listing'] = $files;
         echo $twig->render('@page/media_listing.html', $urls);
+    } else {
+        header('Location: /login/');
+        die();
+    }
+});
+
+$app->get('/admin/editor/', function () use ($twig, $em, $urls) {
+    if ($urls['ulogovan']) {
+        echo $twig->render('@page/editor.html', $urls);
+    } else {
+        header('Location: /login/');
+        die();
     }
 });
 

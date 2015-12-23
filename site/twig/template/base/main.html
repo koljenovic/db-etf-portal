@@ -22,42 +22,171 @@
     <link href="{{rootUri}}/css/main.css" rel="stylesheet">
     <script type="application/javascript"
             src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <!--<script type="text/javascript" src='{{rootUri}}/js/strophe.min.js'></script>-->
+    {% if ulogovan %}
+    <script src="//cdn.ckeditor.com/4.5.6/standard/ckeditor.js"></script>
+    <link rel="stylesheet" type="text/css" media="screen" href="{{rootUri}}/css/converse.min.css">
+    <script src="{{rootUri}}/js/converse.min.js"></script>
+    <script>
+        require(['converse'], function (converse) {
+            converse.initialize({
+                bosh_service_url: 'https://do.mac.ba:5281/http-bind',
+                authentication: 'login',
+                keepalive: true,
+                i18n: locales.en,
+                allow_logout: false,
+                jid: '{{korisnik.korisnik}}@do.mac.ba',
+                password: '{{korisnik.lozinka}}',
+                auto_login: true,
+                allow_muc: false,
+                allow_registration: false,
+                message_carbons: true
+//                forward_messages: true
+            });
+        });
+    </script>
+    {% endif %}
     <script type="application/javascript">
+//        var conn = null;
+//        var jid = null;
+//        var sid = null;
+//        var rid = null;
+//
+//        function createCookie(name, value, days) {
+//            var expires;
+//
+//            if (days) {
+//                var date = new Date();
+//                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+//                expires = "; expires=" + date.toGMTString();
+//            } else {
+//                expires = "";
+//            }
+//            document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + expires + "; path=/";
+//        }
+//
+//        function readCookie(name) {
+//            var nameEQ = encodeURIComponent(name) + "=";
+//            var ca = document.cookie.split(';');
+//            for (var i = 0; i < ca.length; i++) {
+//                var c = ca[i];
+//                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+//                if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+//            }
+//            return null;
+//        }
+//
+//        function eraseCookie(name) {
+//            createCookie(name, "", -1);
+//        }
+//
+//        function OnConnectionStatus(nStatus)
+//        {
+//            if (nStatus == Strophe.Status.CONNECTING) {
+//                console.log('CONNECTING');
+//            } else if (nStatus == Strophe.Status.CONNFAIL) {
+//                console.log('CONNFAIL');
+//            } else if (nStatus == Strophe.Status.DISCONNECTING) {
+//                console.log('DISCONNECTIONG');
+//            } else if (nStatus == Strophe.Status.DISCONNECTED) {
+//                console.log('DISCONNECTED');
+//            } else if (nStatus == Strophe.Status.CONNECTED) {
+//                console.log('CONNECTED');
+//                OnConnected();
+//            }
+//        }
+//
+//        function OnConnected()
+//        {
+//            conn.addHandler(OnPresenceStanza, null, "presence");
+//            conn.addHandler(OnMessageStanza, null, "message");
+//            conn.send($pres());
+//        }
+//
+//        function OnMessageStanza(stanza)
+//        {
+//            var sFrom = $(stanza).attr('from');
+//            var sType = $(stanza).attr('type');
+//            var sBareJid = Strophe.getBareJidFromJid(sFrom);
+//            var sBody = $(stanza).find('body').text();
+//            console.log(sBody);
+//            return true;
+//        }
+//
+//        function OnPresenceStanza(stanza)
+//        {
+//            var sFrom = $(stanza).attr('from');
+//            var sBareJid = Strophe.getBareJidFromJid(sFrom);
+//            var sType = $(stanza).attr('type');
+//            var sShow = $(stanza).find('show').text();
+//            console.log(sFrom);
+//            console.log(sBareJid);
+//            console.log(sShow);
+//            console.log(sType);
+//            switch (sShow) {
+//                case '':
+//                    sShow = 'ol';
+//                    break;
+//            }
+//            var userName = sBareJid.split('@')[0];
+//            if(userName != '{{korisnik.korisnik}}') {
+//                var c = "#status-" + userName;
+//                if(sType == 'unavailable') {
+//                    $(c).remove();
+//                } else if ($(c).length == 0) {
+//                    var e = "<li class=\"list-group-item\" id=\"status-" + userName + "\"><span class=\"badge\">" + sShow + "</span><strong>" + userName + "</strong></li>";
+//                    $('#chat-list').append(e);
+//                } else {
+//                    $(c).find('span').text(sShow);
+//                }
+//            }
+//            return true;
+//        }
+
         $(document).ready(
-                function () {
-                    $('#btn').live('click',
-                            function () {
-                                var email = $('#email').val();
-                                var pass = $('#pass').val();
-                                if (!email) {
-                                    $('#email').css('border', '1px solid red');
-                                } else {
-                                    $('#email').animate({opacity: 0.1}, 3000)
-                                }
-                                if (!pass) {
-                                    $('#pass').css('border', '1px solid red');
-                                } else {
-                                    $('#pass').animate({opacity: 0.1}, 3000)
-                                }
-                            });
-                    $('#glisa').one('click',
-                            function () {
-                                $('#email').val('');
-                                $('#pass').val('');
-                                $('#email').css('border', '1px solid #adadad');
-                                $('#pass').css('border', '1px solid #adadad');
-                                $('#email').animate({opacity: 1}, 3000);
-                                $('#pass').animate({opacity: 1}, 3000);
-                            });
-                    $('#email, #pass').live('change',
-                            function () {
-                                if (!$(this).val()) {
-                                    $(this).css('border', '1px solid red');
-                                } else {
-                                    $(this).css('border', '1px solid green');
-                                }
-                            });
-                });
+                function () {});
+//                    {% if ulogovan %}
+//                    var c = readCookie('xhat');
+//                    if(!c) {
+//                        conn = new Strophe.Connection('http://do.mac.ba:5280/http-bind');
+//                        conn.connect('{{korisnik.korisnik}}@do.mac.ba', '{{korisnik.lozinka}}', OnConnectionStatus);
+//                        rid = conn._proto.rid;
+//                        sid = conn._proto.sid;
+//                        jid = conn.jid;
+//                        createCookie('xhat', jid + ';' + sid + ';' + rid, 30);
+//                    }
+//                    $(window).on('unload', function () {
+//                        console.log('unload');
+//                        rid = conn._proto.rid;
+//                        sid = conn._proto.sid;
+//                        jid = conn.jid;
+//                        eraseCookie('xhat');
+//                        createCookie('xhat', jid + ';' + sid + ';' + rid, 30);
+//                    });
+//                    if(!c) {
+//                        c = c.split(';');
+//                        jid = c[0];
+//                        sid = c[1];
+//                        rid = c[2];
+//                        eraseCookie('xhat')
+
+//                        conn.attach(jid, sid, rid);
+//                        conn.send($pres());
+//                        OnConnected();
+//                        var iq = $iq({type: 'get'}).c('query', {xmlns: 'jabber:iq:roster'});
+//                        conn.sendIQ(iq, function (iq) {
+//                            $(iq).find('item').each(function(){
+//                                var jid = $(this).attr('jid');
+//                                var check = $pres({type: 'probe', to: jid});
+//                                conn.send(check);
+//                            });
+//                            console.log(iq);
+//                        });
+//                    } else {
+//                        conn.connect('{{korisnik.korisnik}}@do.mac.ba', '{{korisnik.lozinka}}', OnConnectionStatus);
+//                    }
+//                    {% endif %}
+//                });
     </script>
 </head>
 <body>
@@ -67,7 +196,7 @@
     {% include "@part/footer.html" %}
 </div>
 <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>
+<!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>-->
 <script src="//cdnjs.cloudflare.com/ajax/libs/holder/2.0/holder.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
         integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"

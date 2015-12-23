@@ -1,5 +1,6 @@
 {% extends "@base/main.html" %}
 {% block content %}
+{% if ulogovan %}
 <div class="row">
     <div class="col-md-12">
         <form method="post" enctype="multipart/form-data" action="{{rootUri}}/media/">
@@ -12,4 +13,5 @@
         </form>
     </div>
 </div>
+{% endif %}
 {% endblock %}

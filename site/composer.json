@@ -4,6 +4,7 @@
     "require": {
         "slim/slim": "2.*",
         "twig/twig": "1.*",
-        "doctrine/orm": "*"
+        "doctrine/orm": "*",
+        "candy-chat/xmpp-prebind-php": "*"
     }
 }
