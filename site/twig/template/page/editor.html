@@ -1,15 +1,82 @@
 {% extends "@base/main.html" %}
 {% block content %}
+<script>
+    $(document).ready(function () {
+        var button1 = document.getElementById('ckfinder-modal-1');
+
+        button1.onclick = function() {
+            selectFileWithCKFinder( 'ckfinder-input-1' );
+        };
+
+        function selectFileWithCKFinder( elementId ) {
+            CKFinder.modal( {
+                chooseFiles: true,
+                width: 800,
+                height: 600,
+                onInit: function( finder ) {
+                    finder.on( 'files:choose', function( evt ) {
+                        console.log(evt.data.files);
+                        var file = evt.data.files.first();
+                        var output = document.getElementById( elementId );
+                        output.value = file.getUrl();
+                    } );
+
+                    finder.on( 'file:choose:resizedImage', function( evt ) {
+                        var output = document.getElementById( elementId );
+                        output.value = evt.data.resizedUrl;
+                    } );
+                }
+            } );
+        }
+    });
+</script>
 <form>
-    <textarea name="editor1" id="editor1" rows="10" cols="80">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque dictum posuere orci tempus scelerisque. Vestibulum eu rhoncus mauris. Proin scelerisque lectus in augue efficitur efficitur. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Etiam fringilla erat quam, non iaculis nisl tincidunt a. Curabitur vitae lobortis justo. Nunc a posuere massa. Donec viverra tellus ac nulla mattis volutpat. Nam finibus arcu mi. Vestibulum venenatis, tortor in auctor condimentum, elit metus pellentesque diam, id facilisis ante massa sed ipsum. Aliquam at felis sed leo tempus tincidunt. Nulla pellentesque rhoncus nibh, sed mollis nibh egestas at. Mauris eu ultricies tortor.
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group form-group-lg">
+                <input type="text" name="naslov" class="form-control" placeholder="Naslov članka">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <textarea name="editor1" id="editor1" rows="10" cols="160">
+            </textarea>
+            <script>
+                CKEDITOR.replace('editor1');
+            </script>
+        </div>
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><strong>Status:</strong> predložak</h3>
+                </div>
+                <!--<div class="panel-body">-->
 
-Donec non aliquet est. Vestibulum ut commodo orci. Donec nec lacus eu erat blandit venenatis in sed orci. Integer neque nibh, interdum nec mi in, elementum ullamcorper enim. Sed sollicitudin lacus purus, luctus cursus nisl pharetra sit amet. Sed gravida porta risus, a gravida eros ultricies ac. Ut dignissim, nunc ut luctus mattis, dui dui blandit neque, ut ultrices augue nisi quis sem. Morbi maximus urna id elit aliquet consequat a quis mauris. Suspendisse vitae orci diam. Cras posuere lectus vel ornare porttitor. Sed lectus metus, semper quis erat a, ultricies ornare nulla. Sed venenatis laoreet risus et tristique. Proin congue volutpat aliquet. Phasellus hendrerit elementum dictum. Praesent condimentum interdum justo ut euismod. Fusce ornare felis non hendrerit fermentum.
 
-Fusce malesuada purus at felis egestas viverra. In varius rhoncus porttitor. Cras ac tempus sapien. Morbi porta elementum molestie. Duis ultricies, libero nec rhoncus accumsan, eros turpis varius enim, id porta justo ligula in magna. In faucibus, nisi sed dignissim maximus, felis lectus sodales erat, in gravida magna metus vitae turpis. Aenean sapien nulla, tincidunt in lorem nec, ornare vulputate libero. Ut ut ex ut sem cursus elementum vel in magna.
-    </textarea>
-    <script>
-        CKEDITOR.replace('editor1');
-    </script>
+                <!--</div>-->
+                <ul class="list-group">
+                    <li class="list-group-item"><strong>Autor:</strong> Ancient Aliens</li>
+                    <li class="list-group-item"><strong>Datum:</strong> 27/12/2069</li>
+                </ul>
+                <div class="panel-footer">
+                    <button type="button" class="btn btn-primary active">Objavi</button>
+                    <button type="button" class="btn btn-default active">Poništi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="input-group">
+                <input id="ckfinder-input-1" type="text" class="form-control">
+                <span class="input-group-btn">
+                    <button type="button" id="ckfinder-modal-1" class="btn btn-success">Dodaj priloge</button>
+                </span>
+            </div>
+        </div>
+    </div>
 </form>
 {% endblock %}
+

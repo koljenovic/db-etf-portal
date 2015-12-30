@@ -63,6 +63,11 @@ function is_ulogovan()
     return false;
 }
 
+// @TODO obrisati u prod
+$app->get('/info/', function () {
+    echo phpinfo();
+});
+
 $app->get('/', function () use ($twig, $urls, $em) {
 //    echo $twig->render('@page/landing.html', $urls);
     $files = $em->getRepository('Medium')->findAll();
@@ -132,7 +137,6 @@ $app->post('/login/', function () use ($em, $urls) {
 });
 
 $app->get('/logout/', function () use ($em, $urls) {
-    // @TODO: ponistiti chat sesiju
     if ($urls['ulogovan']) {
         $c = explode(':', $_COOKIE['session']);
         $s = $em->find('Sesija', $c[1]);
@@ -170,6 +174,15 @@ $app->get('/media/list/', function () use ($twig, $em, $urls) {
 $app->get('/admin/editor/', function () use ($twig, $em, $urls) {
     if ($urls['ulogovan']) {
         echo $twig->render('@page/editor.html', $urls);
+    } else {
+        header('Location: /login/');
+        die();
+    }
+});
+
+$app->get('/admin/uploader/', function () use ($twig, $em, $urls) {
+    if ($urls['ulogovan']) {
+        echo $twig->render('@page/uploader.html', $urls);
     } else {
         header('Location: /login/');
         die();
@@ -225,5 +238,31 @@ $app->post('/media/', function () use ($em, $urls, $app) {
         }
     }
 });
+
+// **** PUBLIC API ZA OBJEKTE
+
+// ** SESIJA **
+$app->get('/sesija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
+$app->post('/sesija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
+$app->put('/sesija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
+$app->delete('/sesija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
+
+// ** MEDIATIP **
+$app->get('/mediatip/:id/', function ($id) use ($twig, $em, $urls, $app) {});
+$app->post('/mediatip/:id/', function ($id) use ($twig, $em, $urls, $app) {});
+$app->put('/mediatip/:id/', function ($id) use ($twig, $em, $urls, $app) {});
+$app->delete('/mediatip/:id/', function ($id) use ($twig, $em, $urls, $app) {});
+
+// ** KATEGORIJA **
+$app->get('/kategorija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
+$app->post('/kategorija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
+$app->put('/kategorija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
+$app->delete('/kategorija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
+
+// ** SESIJA **
+$app->get('/sesija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
+$app->post('/sesija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
+$app->put('/sesija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
+$app->delete('/sesija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
 
 $app->run();

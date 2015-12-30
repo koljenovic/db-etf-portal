@@ -2,3 +2,4 @@ site/vendor
 site/composer.lock
 \.idea
 data/*
+public/dump
