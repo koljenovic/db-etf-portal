@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Home"
+        android:id="@+id/nav_item_home"
+        android:icon="@drawable/iconbluedot"/>
+
+    <item android:title="Log in"
+        android:id="@+id/nav_item_login"
+        android:icon="@drawable/iconbluedot"/>
+
+    <item android:title="Etf">
+        <menu>
+            <item
+                android:title="Fakultet"
+                android:id="@+id/nav_item_fakultet"
+                android:icon="@drawable/iconbluedot"/>
+            <item
+                android:title="Studij"
+                android:id="@+id/nav_item_studij"
+                android:icon="@drawable/iconbluedot"/>
+            <item
+                android:title="Odsjeci"
+                android:id="@+id/nav_item_odsjeci"
+                android:icon="@drawable/iconbluedot"/>
+            <item
+                android:title="Naučni rad"
+                android:id="@+id/nav_item_naucnirad"
+                android:icon="@drawable/iconbluedot"/>
+            <item
+                android:title="Media"
+                android:id="@+id/nav_item_media"
+                android:icon="@drawable/iconbluedot"/>
+        </menu>
+    </item>
+
+
+</menu>
