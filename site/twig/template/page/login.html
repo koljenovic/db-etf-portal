@@ -5,7 +5,7 @@
         <img src="{{rootUri}}/imgs/etf_logo.png" alt="" id="glisa"/>
     </div>
     <div class="col-md-6 va">
-        <form id="forma" method="POST" action="{{baseUri}}/login/">
+        <form id="login-forma">
             <div class="form-group">
                 <label for="email">Prijavi se (LDAP)</label>
                 <input type="text" class="form-control" id="email" name="email" placeholder="Korisnik"/>
@@ -13,7 +13,7 @@
             <div class="form-group">
                 <input type="password" class="form-control" id="pass" name="pass" placeholder="Šifra"/>
             </div>
-            <button class="btn btn-default" onclick="document.getElementById('forma').submit()" id="btn">Dalje</button>
+            <button class="btn btn-default" type="submit" form="login-forma" id="btn">Dalje</button>
         </form>
     </div>
 </div>

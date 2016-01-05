@@ -207,4 +207,16 @@ class Sesija
         $this->media = $media;
     }
 
+    public function getSerial() {
+        return array(
+            'korisnik' => $this->getKorisnik(),
+            'ime' => $this->ime,
+            'prezime' => $this->prezime,
+            'kljuc' => $this->kljuc,
+            'lozinka' => $this->lozinka,
+            'rola' => $this->rola
+        );
+
+    }
+
 }

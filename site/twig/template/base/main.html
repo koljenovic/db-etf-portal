@@ -15,13 +15,14 @@
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
           integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+    <script type="application/javascript" src="{{rootUri}}/js/jquery-1.11.3.min.js"></script>
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
     <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
     <![endif]-->
+
+    <script src="{{rootUri}}/js/main.js"></script>
     <link href="{{rootUri}}/css/main.css" rel="stylesheet">
-    <script type="application/javascript"
-            src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <!--<script type="text/javascript" src='{{rootUri}}/js/strophe.min.js'></script>-->
     {% if ulogovan %}
     <script src="{{rootUri}}/ckeditor/ckeditor.js"></script>
@@ -36,8 +37,8 @@
                 keepalive: true,
                 i18n: locales.en,
                 allow_logout: false,
-                jid: '{{korisnik.korisnik}}@do.mac.ba',
-                password: '{{korisnik.lozinka}}',
+                jid: '{{ulogovan.korisnik}}@do.mac.ba',
+                password: '{{ulogovan.lozinka}}',
                 auto_login: true,
                 allow_muc: false,
                 allow_registration: false,
@@ -58,7 +59,6 @@
     {% block content %}{% endblock %}
     {% include "@part/footer.html" %}
 </div>
-<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.min.js"></script>-->
 <script src="//cdnjs.cloudflare.com/ajax/libs/holder/2.0/holder.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"

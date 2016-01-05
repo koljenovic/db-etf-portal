@@ -13,8 +13,6 @@ require_once 'class/Kategorija.php';
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 
-use XmppPrebind;
-
 \Slim\Slim::registerAutoloader();
 
 chdir(__DIR__);
@@ -35,57 +33,93 @@ $app = new \Slim\Slim();
 $em = EntityManager::create($conn, $config);
 
 $urls = array(
-    'rootUri' => $app->request()->getRootUri(),
+    'rootUri' => $app->request->getRootUri(),
 );
-
-$urls['ulogovan'] = is_ulogovan();
 
 function generateSalt()
 {
     return uniqid(mt_rand(), true);
 }
 
-function is_ulogovan()
+function is_ulogovan($sesija_kljuc = null)
 {
-    global $em;
-    global $urls;
-    if (array_key_exists('session', $_COOKIE)) {
-        $c = explode(':', $_COOKIE['session']);
-        $s = $em->find('Sesija', $c[1]);
-        if ($s->getKljuc() == $c[0] && $s->getValidna()) {
-            $urls['korisnik'] = $s;
-            $urls['korisnik_string'] = var_export($s, true);
-            return true;
-        } else {
-            setcookie('session', '', time() - 60 * 60 * 24 * 30, $urls['rootUri'] . '/');
-        }
+    global $em, $urls;
+    $r = array(
+        'status' => false,
+    );
+    if (!is_null($sesija_kljuc)) {
+        $sesija = $sesija_kljuc;
+    } elseif (array_key_exists('session', $_COOKIE)) {
+        $sesija = $_COOKIE['session'];
+    } else {
+        return $r;
     }
-    return false;
+
+    $c = explode(':', $sesija);
+    $s = $em->find('Sesija', $c[1]);
+    if ($s->getKljuc() == $c[0] && $s->getValidna()) {
+        $r['status'] = true;
+        $r['korisnik'] = $s;
+        $r['korisnik_string'] = var_export($s, true);
+        return $r;
+    } else {
+        setcookie('session', '', time() - 60 * 60 * 24 * 30, $urls['rootUri'] . '/');
+    }
 }
+
+$app->hook('slim.before.router', function() use ($app) {
+    // @TODO ovdje sam stao, sad treba napraviti da provjeri da li u podacima ima polje o sesiji i ako ima da loguje sa tim podacima
+    $env = $app->environment();
+    $env['ulogovan'] = is_ulogovan($app->request->params('session'));
+});
+
+$login = function ($role = 'member') {
+    global $app;
+    $env = $app->environment();
+    if (!$env['ulogovan']['status']) {
+        $app->redirect('/login/');
+    }
+};
 
 // @TODO obrisati u prod
 $app->get('/info/', function () {
     echo phpinfo();
 });
 
-$app->get('/', function () use ($twig, $urls, $em) {
+$app->get('/', function () use ($app, $twig, $urls, $em) {
 //    echo $twig->render('@page/landing.html', $urls);
+    $env = $app->environment();
     $files = $em->getRepository('Medium')->findAll();
     $urls['listing'] = $files;
+    if(array_key_exists('korisnik', $env['ulogovan'])) {
+        $urls['ulogovan'] = $env['ulogovan']['korisnik'];
+    }
     echo $twig->render('@page/media_listing.html', $urls);
 });
 
-$app->get('/login/', function () use ($twig, $urls) {
-    if (!$urls['ulogovan']) {
-        echo $twig->render('@page/login.html', $urls);
+
+$app->get('/login/', function () use ($app, $twig, $urls) {
+    $env = $app->environment();
+    if (!$env['ulogovan']['status']) {
+        echo $twig->render('@page/login.html', array_merge($urls, $env['ulogovan']));
     } else {
         header('Location: /');
         die();
     }
 });
 
-$app->post('/login/', function () use ($em, $urls) {
-    if (!$urls['ulogovan']) {
+$app->post('/logtest/', function () use ($app, $em, $urls) {
+    $env = $app->environment();
+    if ($env['ulogovan']['status']) {
+        echo "{'status': 'ulogovan'}";
+    } else {
+        echo "{'status': 'nije ulogovan'}";
+    }
+});
+
+$app->post('/login/', function () use ($app, $em, $urls) {
+    $env = $app->environment();
+    if (!$env['ulogovan']['status']) {
         try {
             $ds = ldap_connect("localhost");
             ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
@@ -115,10 +149,12 @@ $app->post('/login/', function () use ($em, $urls) {
 
             $em->persist($s);
             $em->flush();
-            setcookie('session', $r['kljuc'] . ':' . $s->getId(), time() + 60 * 60 * 24 * 30, $urls['rootUri'] . '/');
-            header('Location: /');
-            die();
-//            echo json_encode($r);
+
+            $sesija_kljuc = $r['kljuc'] . ':' . $s->getId();
+            setcookie('session', $sesija_kljuc, time() + 60 * 60 * 24 * 30, $urls['rootUri'] . '/');
+//            header('Location: /');
+//            die();
+            echo json_encode(array('session' => $sesija_kljuc));
         } catch (Exception $e) {
             if ($e->getCode() != 2) {
                 $r = [
@@ -136,19 +172,19 @@ $app->post('/login/', function () use ($em, $urls) {
     }
 });
 
-$app->get('/logout/', function () use ($em, $urls) {
-    if ($urls['ulogovan']) {
-        $c = explode(':', $_COOKIE['session']);
-        $s = $em->find('Sesija', $c[1]);
-        $s->setValidna(false);
-        $s->setKrajDt(new DateTime("now"));
-        $em->merge($s);
-        $em->flush();
-        setcookie('session', '', time() - 60 * 60 * 24 * 30, $urls['rootUri'] . '/');
-    }
+$app->get('/logout/', $login, function () use ($em, $urls) {
+    $c = explode(':', $_COOKIE['session']);
+    $s = $em->find('Sesija', $c[1]);
+    $s->setValidna(false);
+    $s->setKrajDt(new DateTime("now"));
+    $em->merge($s);
+    $em->flush();
+    setcookie('session', '', time() - 60 * 60 * 24 * 30, $urls['rootUri'] . '/');
     header('Location: /');
     die();
 });
+
+// @TODO POST logout
 
 $app->get('/media/', function () use ($twig, $em, $urls) {
     if ($urls['ulogovan']) {
@@ -254,13 +290,35 @@ $app->put('/mediatip/:id/', function ($id) use ($twig, $em, $urls, $app) {});
 $app->delete('/mediatip/:id/', function ($id) use ($twig, $em, $urls, $app) {});
 
 // ** KATEGORIJA **
-$app->get('/kategorija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
-$app->post('/kategorija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
+$app->get('/kategorija/:id/', function ($id) use ($twig, $em, $urls, $app) {
+
+});
+
+//$app->post('/kategorija/', function ($id) use ($twig, $em, $urls, $app) {
+//    $k = new Kategorija();
+//    // naziv, parent, media
+//    $parsedBody = $request->getParsedBody();
+//    json_decode($input, true).
+//    $k->setNaziv()
+//    $m->setKorisnik($urls['korisnik']);
+//    $m->setFilename($dest_name);
+//    $m->setTip($tip);
+//    $k = $em->getRepository('Kategorija')->findOneBy(array('naziv' => 'root'));
+//    $m->setKategorija($k);
+//
+//    $em->persist($m);
+//    $em->flush();
+//});
+
 $app->put('/kategorija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
 $app->delete('/kategorija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
 
 // ** SESIJA **
-$app->get('/sesija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
+$app->get('/sesija/', $login, function () use ($twig, $em, $urls, $app) {
+    $env = $app->environment();
+    echo json_encode($env['ulogovan']['korisnik']->getSerial());
+});
+
 $app->post('/sesija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
 $app->put('/sesija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
 $app->delete('/sesija/:id/', function ($id) use ($twig, $em, $urls, $app) {});
