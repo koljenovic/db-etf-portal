@@ -27,3 +27,12 @@ body {
 footer {
     margin-top: 25px;
 }
+
+.glyphicon {
+    margin: 5px 15px;
+    font-size: 32px;
+}
+
+.panel-footer {
+    text-align: center;
+}

@@ -10,6 +10,8 @@ class Medium
     /** @Id @Column(type="integer") @GeneratedValue **/
     protected $id;
     /** @Column(type="string", nullable=true) **/
+    protected $naslov;
+    /** @Column(type="text", nullable=true) **/
     protected $tekst;
     /** @Column(type="boolean") **/
     protected $izdvojeno;
@@ -19,16 +21,21 @@ class Medium
     protected $korisnik;
     /** @Column(type="string", nullable=true) **/
     protected $filename;
-    /** @ManyToOne(targetEntity="Kategorija", inversedBy="media") **/
+    /** @ManyToOne(targetEntity="Kategorija") **/
     protected $kategorija;
     /** @OneToMany(targetEntity="Medium", mappedBy="parent") **/
     protected $children;
     /** @ManyToOne(targetEntity="Medium", inversedBy="children") **/
     protected $parent;
+    /** @Column(type="datetimetz") **/
+    protected $dt;
 
     public function __construct() {
         $this->children = new ArrayCollection();
-        $this->setIzdvojeno(false);
+        if(is_null($this->getId())) {
+            $this->setIzdvojeno(false);
+            $this->setDt(new DateTime("now"));
+        }
     }
 
     /**
@@ -45,6 +52,22 @@ class Medium
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNaslov()
+    {
+        return $this->naslov;
+    }
+
+    /**
+     * @param mixed $naslov
+     */
+    public function setNaslov($naslov)
+    {
+        $this->naslov = $naslov;
     }
 
     /**
@@ -175,5 +198,30 @@ class Medium
         $this->filename = $filename;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getDt()
+    {
+        return $this->dt;
+    }
 
+    /**
+     * @param mixed $dt
+     */
+    public function setDt($dt)
+    {
+        $this->dt = $dt;
+    }
+
+    public function getSerial() {
+        return array(
+            'id' => $this->getId(),
+            'naslov' => $this->getNaslov(),
+            'tekst' => $this->getTekst(),
+            'kategorija' => $this->getKategorija(),
+            'korisnik' => $this->getKorisnik(),
+            'dt' => $this->getDt()->format('d/m/Y H:i'),
+        );
+    }
 }

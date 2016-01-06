@@ -21,31 +21,21 @@
                 <!--{% endfor %}-->
                 <!--</ul>-->
                 <!--</li>-->
+                {% for item in menu %}
                 <li>
-                    <a href="{{rootUri}}/">Fakultet</a>
+                    <a href="{{rootUri}}/kategorija/{{item.id}}/media/">{{item.naziv}}</a>
                 </li>
-                <li>
-                    <a href="{{rootUri}}/">Studij</a>
-                </li>
-                <li>
-                    <a href="{{rootUri}}/">Odsjeci</a>
-                </li>
-                <li>
-                    <a href="{{rootUri}}/">Naučni rad</a>
-                </li>
-                {% if ulogovan %}
+                {% endfor %}
+                {% if ulogovan and ulogovan.rola <= 501 %}
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
                        aria-expanded="false">Admin <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="{{rootUri}}/admin/uploader/">Upload media</a></li>
-                        <li><a href="{{rootUri}}/admin/editor/">Editor</a></li>
+                        <li><a href="{{rootUri}}/admin/editor/">Novi članak</a></li>
+                        <li><a href="{{rootUri}}/admin/uploader/">Upravljanje datotekama</a></li>
                     </ul>
                 </li>
                 {% endif %}
-                <li>
-                    <a href="{{rootUri}}/">EN</a>
-                </li>
                 {% if ulogovan %}
                 <li>
                     <a href="{{rootUri}}/logout/">Odjavi se</a>

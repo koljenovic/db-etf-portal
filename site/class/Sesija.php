@@ -209,12 +209,13 @@ class Sesija
 
     public function getSerial() {
         return array(
+            'id' => $this->getId(),
             'korisnik' => $this->getKorisnik(),
-            'ime' => $this->ime,
-            'prezime' => $this->prezime,
-            'kljuc' => $this->kljuc,
-            'lozinka' => $this->lozinka,
-            'rola' => $this->rola
+            'ime' => $this->getIme(),
+            'prezime' => $this->getPrezime(),
+            'kljuc' => $this->getKljuc(),
+            'lozinka' => $this->getLozinka(),
+            'rola' => $this->getRola(),
         );
 
     }

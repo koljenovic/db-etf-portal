@@ -1,7 +1,24 @@
 {% extends "@base/main.html" %}
 {% block content %}
-<!--<p>Dobrodošao {{surname}} {{name}}</p>-->
-<pre>
-{{korisnik_string}}
-</pre>
+<div class="row">
+    <div class="col-md-9">
+        {% for clanak in clanci %}
+        <div class="media">
+            <div class="media-left media-top">
+                <a href="#">
+                    <img class="media-object" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/PjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+PCEtLQpTb3VyY2UgVVJMOiBob2xkZXIuanMvNjR4NjQKQ3JlYXRlZCB3aXRoIEhvbGRlci5qcyAyLjYuMC4KTGVhcm4gbW9yZSBhdCBodHRwOi8vaG9sZGVyanMuY29tCihjKSAyMDEyLTIwMTUgSXZhbiBNYWxvcGluc2t5IC0gaHR0cDovL2ltc2t5LmNvCi0tPjxkZWZzPjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+PCFbQ0RBVEFbI2hvbGRlcl8xNTIxMmQ4MDA4YSB0ZXh0IHsgZmlsbDojQUFBQUFBO2ZvbnQtd2VpZ2h0OmJvbGQ7Zm9udC1mYW1pbHk6QXJpYWwsIEhlbHZldGljYSwgT3BlbiBTYW5zLCBzYW5zLXNlcmlmLCBtb25vc3BhY2U7Zm9udC1zaXplOjEwcHQgfSBdXT48L3N0eWxlPjwvZGVmcz48ZyBpZD0iaG9sZGVyXzE1MjEyZDgwMDhhIj48cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9IiNFRUVFRUUiLz48Zz48dGV4dCB4PSIxNC41IiB5PSIzNi41Ij42NHg2NDwvdGV4dD48L2c+PC9nPjwvc3ZnPg==">
+                </a>
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading"><a href="{{rootUri}}/media/{{clanak.id}}/">{{clanak.naslov}}</a></h4>
+                {{clanak.tekst | slice(0,250) | raw }}...</p>
+            </div>
+        </div>
+        <br>
+        {% endfor %}
+    </div>
+    <div class="col-md-3">
+        <div class="fb-page" data-href="https://www.facebook.com/etf.unsa.ba" data-tabs="timeline" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/etf.unsa.ba"><a href="https://www.facebook.com/etf.unsa.ba">Faculty of Electrical Engineering Sarajevo</a></blockquote></div></div>
+    </div>
+</div>
 {% endblock %}
