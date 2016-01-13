@@ -28,6 +28,7 @@
     <script src="{{rootUri}}/ckeditor/ckeditor.js"></script>
     <script src="{{rootUri}}/ckfinder/ckfinder.js"></script>
     <link rel="stylesheet" type="text/css" media="screen" href="{{rootUri}}/css/converse.min.css">
+    {% if not android %}
     <script src="{{rootUri}}/js/converse.min.js"></script>
     <script>
         require(['converse'], function (converse) {
@@ -47,6 +48,7 @@
             });
         });
     </script>
+    {% endif %}
     {% endif %}
     <script type="application/javascript">
         $(document).ready(

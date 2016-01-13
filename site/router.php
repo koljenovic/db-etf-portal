@@ -48,6 +48,7 @@ function get_menu() {
 $urls = array(
     'rootUri' => $app->request->getRootUri(),
     'menu' => get_menu(),
+    'android' => is_android(),
 );
 
 function generateSalt()
@@ -85,6 +86,11 @@ $app->hook('slim.before.router', function() use ($app) {
     $env = $app->environment();
     $env['ulogovan'] = is_ulogovan($app->request->params('session'));
 });
+
+function is_android() {
+    global $app;
+    return stristr($app->request->headers->get('USER_AGENT'), 'Android') != false ? true : false;
+}
 
 $acl_map = array(
     500 => 'admin',
@@ -235,7 +241,9 @@ $app->get('/media/:id/', function ($id) use ($app, $twig, $em, $urls) {
         $app->redirect('/');
     }
     $urls['clanak'] = $m->getSerial();
-    $urls['ulogovan'] = $env['ulogovan']['korisnik'];
+    if(array_key_exists('korisnik', $env['ulogovan'])) {
+        $urls['ulogovan'] = $env['ulogovan']['korisnik'];
+    }
     echo $twig->render('@page/media.html', $urls);
 
 });
