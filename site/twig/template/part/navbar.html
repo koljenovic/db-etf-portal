@@ -41,7 +41,7 @@
                     <a href="{{rootUri}}/logout/">Odjavi se</a>
                 </li>
                 {% endif %}
-                {% if not ulogovan %}
+                {% if not ulogovan and not android %}
                 <li>
                     <a href="{{rootUri}}/login/">Prijavi se</a>
                 </li>
